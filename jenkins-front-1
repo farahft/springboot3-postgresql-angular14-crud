@@ -4,12 +4,18 @@ pipeline {
         nodejs 'nodejs'
     }
     stages {
-        stage('Get Code from Github & clean workspace') {
+        stage('Github') {
                 steps {
-                        cleanWs()
                         checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/farahft/springboot3-postgresql-angular14-crud']])
                     }
         }
-
+        stage('Build'){
+            steps{
+                dir('./frontend/crud-application') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
     }
 }
