@@ -1,16 +1,25 @@
-# First Stage: Build the Angular app
-FROM node:16.13.1-alpine AS build
-WORKDIR /usr/src/app
+# stage 1 : build angular app
+FROM node:20.10.0-alpine3.19 as build-step
+
+WORKDIR /app
+
 COPY package*.json ./
-RUN npm ci
+
+RUN npm install
+
 COPY . .
-CMD ["npm", "run", "build"]
 
-# Second Stage: Create a smaller image for production
-FROM node:16.13.1-alpine
-WORKDIR /usr/src/app
-COPY --from=build /usr/src/app/dist ./dist
-EXPOSE 7000
-CMD ["npx", "http-server", "./dist"]
+RUN npm run build --prod
 
+# stage 2 : run npx http-server
+FROM node:20.10.0-alpine3.19
 
+WORKDIR /app
+
+COPY --from=build-step /app/dist/angular-mean-crud-tutorial /app
+
+RUN npm install -g http-server
+
+EXPOSE 9999
+
+CMD ["http-server", "-p", "9999", "-c-1", "/app"]
