@@ -1,5 +1,6 @@
 pipeline {
     agent any
+    environement{SCANNER_HOME = tool 'sonar' }
     tools {
         nodejs 'nodejs'
     }
