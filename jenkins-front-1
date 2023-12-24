@@ -28,6 +28,14 @@ pipeline {
                         -Dsonar.sources=.'''}}
                 }
                }
+                stage('Create docker image'){
+        steps{
+                dir('./frontend/crud-application'){
+                script{
+                    sh 'docker build -t farah/front .'
+                }
+                }
+            }
          }
     }
     
