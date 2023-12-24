@@ -11,13 +11,13 @@ pipeline {
                 }
         }
 
-        stage('Build maven'){
-            steps{
-                dir('./backend/crud-application') {
-                    sh 'mvn clean package'
-                }
-            }
-        }
+       // stage('Build maven'){
+         //   steps{
+           //     dir('./backend/crud-application') {
+             //       sh 'mvn clean package'
+               // }
+            //}
+        //}
           stage('SoanrQube Analysis') {
             steps {
                 dir('./backend/crud-application') {
@@ -28,24 +28,24 @@ pipeline {
                         -Dsonar.sources=.'''}}
                 }
                }
-        stage('docker image'){
-            steps{
-                dir('./backend/crud-application'){
-                script{
-                    sh 'docker build -t farah/back .'
-                }
-                }
-            }
-         }
-        stage('hub'){
-            steps{
-                script{
-                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
-                        sh 'docker push farah/back'
-                    }
-                }
-            }
-        }
+       // stage('docker image'){
+         //   steps{
+           //     dir('./backend/crud-application'){
+             //   script{
+               //     sh 'docker build -t farah/back .'
+                //}
+                //}
+            //}
+         //}
+      //  stage('hub'){
+        //    steps{
+          //      script{
+            //        withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
+              //          sh 'docker push farah/back'
+                //    }
+                //}
+            //}
+        //}
          
     }
     }
