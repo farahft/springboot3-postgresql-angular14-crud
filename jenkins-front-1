@@ -20,11 +20,12 @@ pipeline {
         }
         stage('SoanrQube Analysis') {
             steps {
+                dir('./frontend/crud-application') {
                 // test code with sonarqube
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
                     sh '''$SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectKey=jenkins \
-                        -Dsonar.sources=.'''
+                        -Dsonar.sources=.'''}}
                 }
                }
          }
