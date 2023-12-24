@@ -29,8 +29,8 @@ pipeline {
                         -Dsonar.sources=.'''}}
                 }
                }
-                stage('Create docker image'){
-        steps{
+        stage('docker image'){
+            steps{
                 dir('./frontend/crud-application'){
                 script{
                     sh 'docker build -t farah/front .'
@@ -38,5 +38,15 @@ pipeline {
                 }
             }
          }
+
+        stage('docker hub'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
+                        sh 'docker push farah/front'
+                    }
+                }
+            }
+        }
     }
 }

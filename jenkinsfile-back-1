@@ -28,5 +28,24 @@ pipeline {
                         -Dsonar.sources=.'''}}
                 }
                }
+        stage('docker image'){
+            steps{
+                dir('./backend/crud-application'){
+                script{
+                    sh 'docker build -t farah/back .'
+                }
+                }
+            }
+         }
+        stage('hub'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
+                        sh 'docker push farah/back'
+                    }
+                }
+            }
+        }
+         
     }
     }
