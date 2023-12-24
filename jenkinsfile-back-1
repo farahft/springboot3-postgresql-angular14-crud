@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven'
+    }
+
+    stages {
+        stage('Github') {
+                steps {
+                    checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/farahft/springboot3-postgresql-angular14-crud']])
+                }
+        }
+
+        stage('Build maven'){
+            steps{
+                dir('./backend/crud-application') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+          stage('SoanrQube Analysis') {
+            steps {
+                dir('./backend/crud-application') {
+                // test code with sonarqube
+                withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectKey=jenkins \
+                        -Dsonar.sources=.'''}}
+                }
+               }
+        stage('docker image'){
+            steps{
+                dir('./backend/crud-application'){
+                script{
+                    sh 'docker build -t farah/back .'
+                }
+                }
+            }
+         }
+        stage('hub'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
+                        sh 'docker push farah/back'
+                    }
+                }
+            }
+        }
+         
+    }
+    }

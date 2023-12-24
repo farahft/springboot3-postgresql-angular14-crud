@@ -1,0 +1,21 @@
+version: "2"
+services:
+    backend:
+        image: backend
+        container_name: backend
+        ports:
+            - "8092:8092"
+        networks:
+            - devops-project-network
+    frontend:
+        image: frt
+        container_name: frt
+        ports:
+            - "4200:80"
+        depends_on:
+            - backend
+        networks:
+            - devops-project-network
+
+networks:
+  devops-project-network:

@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+    environment{SCANNER_HOME = tool 'sonar' }
+    tools {
+        nodejs 'nodejs'
+        dockerTool 'docker'
+    }
+    stages {
+        stage('Github') {
+                steps {
+                        checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/farahft/springboot3-postgresql-angular14-crud']])
+                    }
+        }
+        stage('Build'){
+            steps{
+                dir('./frontend/crud-application') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+        stage('SoanrQube Analysis') {
+            steps {
+                dir('./frontend/crud-application') {
+                // test code with sonarqube
+                withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectKey=jenkins \
+                        -Dsonar.sources=.'''}}
+                }
+               }
+        stage('docker image'){
+            steps{
+                dir('./frontend/crud-application'){
+                script{
+                    sh 'docker build -t farah/front .'
+                }
+                }
+            }
+         }
+
+        stage('docker hub'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
+                        sh 'docker push farah/front'
+                    }
+                }
+            }
+        }
+    }
+}
