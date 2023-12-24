@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+    tools {
+        nodejs 'nodejs'
+    }
+    stages {
+        stage('Get Code from Github & clean workspace') {
+                steps {
+                        cleanWs()
+                        checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/farahft/springboot3-postgresql-angular14-crud']])
+                    }
+        }
+
+    }
+}
