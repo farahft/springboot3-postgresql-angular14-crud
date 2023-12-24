@@ -13,7 +13,7 @@ pipeline {
 
         stage('Build maven'){
             steps{
-                dir('./back') {
+                dir('./backend/crud-application') {
                     sh 'mvn clean package'
                 }
             }
