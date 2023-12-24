@@ -22,7 +22,7 @@ pipeline {
                 // test code with sonarqube
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
                     sh '''$SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectKey=$PROJECT_NAME \
+                        -Dsonar.projectKey=jenkins \
                         -Dsonar.sources=.'''
                 }
                }
