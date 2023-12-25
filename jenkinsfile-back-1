@@ -25,9 +25,10 @@ pipeline {
                 dir('./backend/crud-application') {
                 //  test code with sonarqube
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectKey=jenkins \
-                        -Dsonar.sources=.'''}}
+                   
+                        sh 'mvn sonar:sonar'
+            
+}}
                 }
                }
         stage('docker image'){
