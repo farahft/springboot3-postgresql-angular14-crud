@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage('SoanrQube Analysis') {
+        stage('SoanrQube') {
             steps {
                 dir('./frontend/crud-application') {
                  //test code with sonarqube
@@ -40,7 +40,7 @@ pipeline {
             }
          }
 
-        stage('Push to docker hub'){
+        stage('hub'){
             steps{
                 script{
                     withDockerRegistry(credentialsId: 'dockerHubPwd', toolName: 'docker') {
