@@ -34,12 +34,21 @@ pipeline {
                 dir('./frontend/crud-application'){
                 script{
                     sh 'docker ps'
-                    sh 'docker build -t farah/front .'
+                    sh 'docker build -t farahft/front:1.0.0 .'
                 }
                 }
             }
          }
 
+        stage('Push to docker hub'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerHubPwd', toolName: 'docker') {
+                        sh "docker push farahft/front:1.0.0"
+                    }
+                }
+            }
+        }
 
     }
 }
