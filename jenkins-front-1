@@ -3,7 +3,7 @@ pipeline {
     environment{SCANNER_HOME = tool 'sonar' }
     tools {
         nodejs 'nodejs'
-        dockerTool 'docker'
+        // dockerTool 'docker'
     }
     stages {
         stage('Github') {
