@@ -33,13 +33,29 @@ pipeline {
             steps{
                 dir('./frontend/crud-application'){
                 script{
-                    sh 'docker ps'
-                    // sh 'docker build -t farah/front .'
+                    sh 'docker build -t farah/front .'
                 }
                 }
             }
          }
 
-
+        stage('docker hub'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
+                        sh 'docker push farah/front'
+                    }
+                }
+            }
+        }
+        stage('K8s') {
+            steps {
+                dir('./frontend/crud-application') {
+                script {
+                    kubernetesDeploy(configs: "depfront.yaml", kubeconfigId: "kubernetes")
+                    }
+                }
+            }
+        }
     }
 }

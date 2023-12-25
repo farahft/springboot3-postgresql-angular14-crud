@@ -48,11 +48,12 @@ pipeline {
                 }
             }
         }
-         stage('Docker compose'){
-            steps{
-                script{
-                    sh 'docker-compose -f docker-compose-app.yaml down -v'
-                    sh 'docker-compose -f docker-compose-app.yaml up -d'
+        stage('K8s') {
+            steps {
+                dir('./frontend/crud-application') {
+                script {
+                    kubernetesDeploy(configs: "depback.yaml", kubeconfigId: "kubernetes")
+                    }
                 }
             }
         }
