@@ -49,6 +49,22 @@ pipeline {
                 }
             }
         }
+                //   stage('Docker compose'){
+        //      steps{
+        //          script{
+        //              sh 'docker-compose -f docker-compose-app.yaml down -v'
+        //              sh 'docker-compose -f docker-compose-app.yaml up -d'
+        //          }
+        //      }
+        //  }
 
+  post {
+    success {
+      slackSend color: '#ffffff', message: "frontend succeeded"
+    }
+    failure {
+      slackSend color: '#000000', message: "frontend failed"
+    }
+  }
     }
 }

@@ -49,6 +49,15 @@ pipeline {
                 }
             }
         }
+        // stage('Deploy to K8s') {
+         //   steps {
+          //      dir('./backend') {
+            //    script {
+             //       kubernetesDeploy(configs: "deployementbackend.yaml", kubeconfigId: "kubernetes")
+              //      }
+               // }
+            //}
+       // }
 
     }
     post {
