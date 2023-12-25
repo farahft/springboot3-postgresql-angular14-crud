@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage('SoanrQube') {
+        stage('SoanrQube Analysis') {
             steps {
                 dir('./frontend/crud-application') {
                  //test code with sonarqube
@@ -40,7 +40,7 @@ pipeline {
             }
          }
 
-        stage('hub'){
+        stage('Push to docker hub'){
             steps{
                 script{
                     withDockerRegistry(credentialsId: 'dockerHubPwd', toolName: 'docker') {
@@ -51,12 +51,4 @@ pipeline {
         }
 
     }
-    post {
-    success {
-      slackSend color: '#ffffff', message: "frontend succeeded"
-    }
-    failure {
-      slackSend color: '#000000', message: "frontend failed"
-    }
-  }
 }

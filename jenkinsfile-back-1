@@ -1,7 +1,9 @@
 pipeline {
     agent any
+    environment{SCANNER_HOME = tool 'sonar' }
     tools {
         maven 'maven'
+        dockerTool 'docker'
     }
 
     stages {
@@ -14,38 +16,55 @@ pipeline {
         stage('Build maven'){
             steps{
                 dir('./backend/crud-application') {
-                    sh 'mvn clean package'
+                    sh 'mvn install -DskipTests'
                 }
             }
         }
           stage('SoanrQube Analysis') {
             steps {
                 dir('./backend/crud-application') {
-                // test code with sonarqube
+                //  test code with sonarqube
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectKey=jenkins \
-                        -Dsonar.sources=.'''}}
+                   
+                        sh 'mvn sonar:sonar'
+            
+}}
                 }
                }
         stage('docker image'){
             steps{
                 dir('./backend/crud-application'){
                 script{
-                    sh 'docker build -t farah/back .'
-                }
-                }
-            }
+                     sh 'docker build -t farahft/back:1.0.0 .'
+                 }
+                 }
+             }
+          }
+         stage('hub'){
+             steps{
+                 script{
+                     withDockerRegistry(credentialsId: 'dockerHubPwd', toolName: 'docker') {
+                         sh 'docker push farahft/back:1.0.0 '
+                     }
+                 }
+             }
          }
-        stage('hub'){
-            steps{
-                script{
-                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
-                        sh 'docker push farah/back'
-                    }
-                }
-            }
-        }
+        //   stage('Docker compose'){
+        //      steps{
+        //          script{
+        //              sh 'docker-compose -f docker-compose-app.yaml down -v'
+        //              sh 'docker-compose -f docker-compose-app.yaml up -d'
+        //          }
+        //      }
+        //  }
          
     }
+    post {
+    success {
+      slackSend color: '#ffffff', message: "backend succeeded"
     }
+    failure {
+      slackSend color: '#000000', message: "backend failed"
+    }
+  }
+}
