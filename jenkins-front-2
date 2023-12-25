@@ -22,7 +22,7 @@ pipeline {
         stage('SoanrQube Analysis') {
             steps {
                 dir('./frontend/crud-application') {
-                // test code with sonarqube
+                 //test code with sonarqube
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
                     sh '''$SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectKey=jenkins \
@@ -33,29 +33,22 @@ pipeline {
             steps{
                 dir('./frontend/crud-application'){
                 script{
-                    sh 'docker build -t farah/front .'
+                    sh 'docker ps'
+                    sh 'docker build -t farahft/front:1.0.0 .'
                 }
                 }
             }
          }
 
-        stage('docker hub'){
+        stage('Push to docker hub'){
             steps{
                 script{
-                    withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
-                        sh 'docker push farah/front'
+                    withDockerRegistry(credentialsId: 'dockerHubPwd', toolName: 'docker') {
+                        sh "docker push farahft/front:1.0.0"
                     }
                 }
             }
         }
-        stage('K8s') {
-            steps {
-                dir('./frontend/crud-application') {
-                script {
-                    kubernetesDeploy(configs: "depfront.yaml", kubeconfigId: "kubernetes")
-                    }
-                }
-            }
-        }
+
     }
 }
