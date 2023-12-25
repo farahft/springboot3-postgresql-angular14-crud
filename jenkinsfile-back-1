@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Github') {
                 steps {
-                    checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/farahft/springboot3-postgresql-angular14-crud']])
+                    checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https:github.com/farahft/springboot3-postgresql-angular14-crud']])
                 }
         }
 
@@ -20,42 +20,50 @@ pipeline {
                 }
             }
         }
-        //  stage('SoanrQube Analysis') {
-          //  steps {
-            //    dir('./backend/crud-application') {
-              //   test code with sonarqube
-                //withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
-                  //  sh '''$SCANNER_HOME/bin/sonar-scanner \
-                    //    -Dsonar.projectKey=jenkins \
-                      //  -Dsonar.sources=.'''}}
-                //}
-               //}
-        //stage('docker image'){
-          //  steps{
-            //    dir('./backend/crud-application'){
-              //  script{
-                    // sh 'docker build -t farah/back .'
-        //         }
-        //         }
-        //     }
+          stage('SoanrQube Analysis') {
+            steps {
+                dir('./backend/crud-application') {
+                //  test code with sonarqube
+                withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonar')  {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectKey=jenkins \
+                        -Dsonar.sources=.'''}}
+                }
+               }
+        stage('docker image'){
+            steps{
+                dir('./backend/crud-application'){
+                script{
+                     sh 'docker build -t farahft/back:1.0.0 .'
+                 }
+                 }
+             }
+          }
+         stage('hub'){
+             steps{
+                 script{
+                     withDockerRegistry(credentialsId: 'dockerHubPwd', toolName: 'docker') {
+                         sh 'docker push farahft/back:1.0.0 '
+                     }
+                 }
+             }
+         }
+        //   stage('Docker compose'){
+        //      steps{
+        //          script{
+        //              sh 'docker-compose -f docker-compose-app.yaml down -v'
+        //              sh 'docker-compose -f docker-compose-app.yaml up -d'
+        //          }
+        //      }
         //  }
-        // stage('hub'){
-        //     steps{
-        //         script{
-        //             withDockerRegistry(credentialsId: 'dockerhubpwdForjenkins', toolName: 'docker') {
-        //                 sh 'docker push farah/back'
-        //             }
-        //         }
-        //     }
-        // }
-        //  stage('Docker compose'){
-        //     steps{
-        //         script{
-        //             sh 'docker-compose -f docker-compose-app.yaml down -v'
-        //             sh 'docker-compose -f docker-compose-app.yaml up -d'
-        //         }
-        //     }
-        // }
          
     }
+    post {
+    success {
+      slackSend color: '#ffffff', message: "backend succeeded"
     }
+    failure {
+      slackSend color: '#000000', message: "backend failed"
+    }
+  }
+}
